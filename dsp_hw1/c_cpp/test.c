@@ -4,7 +4,6 @@
 
 #include "hmm.h"
 #define MAX_HMM_NUM 10
-using namespace std;
 
 HMM hmms[MAX_HMM_NUM];
 char name[MAX_HMM_NUM][30];
