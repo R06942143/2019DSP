@@ -1,6 +1,6 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio>
+#include <stdlib>
+#include <string>
 #include "hmm.h"
 HMM hmm;
 
