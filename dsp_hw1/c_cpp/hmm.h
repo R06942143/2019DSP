@@ -25,12 +25,9 @@
 #ifndef MAX_TIME
 #  define MAX_TIME   55
 #endif
-
-
-#define max(a,b) 
-   ({ __typeof__ (a) _a = (a); 
-       __typeof__ (b) _b = (b);
-     _a > _b ? _a : _b; })
+#ifndef max
+	#define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
 
 
 typedef struct{
@@ -141,5 +138,8 @@ static void dump_models( HMM *hmm, const int num )
       dumpHMM( stderr, &hmm[i] );
    }
 }
+
+
+
 
 #endif
