@@ -7,9 +7,9 @@ HMM hmm;
 void trainHmm(char* seq_model){
     FILE *fp = open_or_die(seq_model, "r");
 
-    char seq[MAX_TIME];
+    char seq[50];
     int state_num = hmm.state_num, obsv_num = hmm.observ_num;
-    double gamma[MAX_TIME][state_num], obsv_gamma[obsv_num][state_num];
+    double gamma[50][state_num], obsv_gamma[obsv_num][state_num];
     double epsilon[state_num][state_num];
 
     memset(gamma, 0, sizeof(gamma));
@@ -17,13 +17,11 @@ void trainHmm(char* seq_model){
     memset(epsilon, 0, sizeof(epsilon));
 
     int N=0, T;
-    while(fgets(seq, MAX_TIME, fp)>0){
+    while(fgets(seq, 50, fp)>0){
         T = strlen(seq)-1;
         N++;
         for(int t=0;t<T;t++){
-            printf(seq[t]);
             seq[t] -= 'A';
-            printf('\n');
         }
             
             
