@@ -1,6 +1,6 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "hmm.h"
 #define MAX_HMM_NUM 10
@@ -10,11 +10,6 @@ HMM hmms[MAX_HMM_NUM];
 char name[MAX_HMM_NUM][30];
 int HMM_NUM;
 
-
-#define max(a,b) 
-   ({ __typeof__ (a) _a = (a);
-       __typeof__ (b) _b = (b);
-     _a > _b ? _a : _b; })
 
 
 double HMMProb(int hid, char*seq){
