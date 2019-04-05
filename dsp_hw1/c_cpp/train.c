@@ -76,7 +76,6 @@ void trainHmm(char* seq_model){
             }
         }
     }
-    fclose(fp);
 
 
     for(int s=0;s<state_num;s++){
