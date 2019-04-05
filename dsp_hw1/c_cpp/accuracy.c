@@ -17,6 +17,7 @@ int main(int argc,char *argv[])
 	total=0;
 	while(fscanf(answer,"%s",line_model)>0)
 	{
+        printf(line_model)
 		fscanf(input,"%s %s",guess,pro);
 		total++;
 		if(strcmp(line_model,guess)==0)

@@ -4,17 +4,6 @@
 #include "hmm.h"
 HMM hmm;
 
-/*
-typedef struct{
-   char *model_name;
-   int state_num;                   //number of state
-   int observ_num;                  //number of observation
-   double initial[MAX_STATE];           //initial prob.
-   double transition[MAX_STATE][MAX_STATE]; //transition prob.
-   double observation[MAX_OBSERV][MAX_STATE];   //observation prob.
-} HMM;
-*/
-
 void trainHmm(char* seq_model){
     FILE *fp = open_or_die(seq_model, "r");
 
@@ -29,6 +18,7 @@ void trainHmm(char* seq_model){
 
     int N=0, T;
     while(fgets(seq, MAX_TIME, fp)>0){
+        printf(seq)
         T = strlen(seq)-1;
         N++;
         for(int t=0;t<T;t++) seq[t] -= 'A';
@@ -113,12 +103,7 @@ void trainHmm(char* seq_model){
 }
 
 int main(int argc, char** argv){
-    if(argc!=5){
-        printf("Error: Need 4 arguments (#iteration, model_init.txt, seq_model.txt, model.txt).\n");
-        return 0;
-    }
-    
-    //set up arguments
+
     int itration = atoi(argv[1]);
     char* init_txt = argv[2];
     char* seq_model = argv[3];
