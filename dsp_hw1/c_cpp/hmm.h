@@ -22,6 +22,10 @@
 #	define MAX_LINE 	256
 #endif
 
+#ifndef MAX_TIME
+#  define MAX_TIME   55
+#endif
+
 typedef struct{
    char *model_name;
    int state_num;					//number of state
