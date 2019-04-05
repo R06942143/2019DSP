@@ -7,9 +7,9 @@ HMM hmm;
 void trainHmm(char* seq_model){
     FILE *f_seq = open_or_die(seq_model, "r");
 
-    //char seq[50];
+    char seq[256];
     int state_num = hmm.state_num, obsv_num = hmm.observ_num;
-    double gamma[50][state_num], obsv_gamma[obsv_num][state_num];
+    double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
     double epsilon[state_num][state_num];
 
     memset(gamma, 0, sizeof(gamma));
