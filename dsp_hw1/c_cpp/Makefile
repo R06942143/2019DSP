@@ -1,12 +1,13 @@
 .PHONY: all clean
 
-CFLAGS+=
+CFLGAS+=
 LDFLAGS+=-lm     # link to math library
 
-TARGET=test_hmm
+TARGET=train 
+TARGET2=test
+TARGET3=accuracy
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET2) $(TARGET3)
 # type make/make all to compile test_hmm
-
 clean:
-	$(RM) $(TARGET)   # type make clean to remove the compiled file
+	$(RM) $(TARGET) $(TARGET2) $(TARGET3) # type make clean to remove the compiled file
