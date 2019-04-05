@@ -119,14 +119,17 @@ int main(int argc, char** argv){
     }
     
     //set up arguments
-    int itr = atoi(argv[1]);
+    int itration = atoi(argv[1]);
     char* init_txt = argv[2];
     char* seq_model = argv[3];
     char* out_txt = argv[4];
 
     loadHMM(&hmm, init_txt);
 
-    for(int i=0;i<itr;i++) trainHmm(seq_model);
+    for(int i=0;i<itration;i++){
+        trainHmm(seq_model);
+    }
+        
 
     FILE *fp_out = open_or_die(out_txt, "w");
     dumpHMM(fp_out, &hmm);
