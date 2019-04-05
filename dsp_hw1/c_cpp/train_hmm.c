@@ -10,10 +10,11 @@
 
 void main(int argc,char *argv[]){
     int iteration = atoi(argv[1]);
+    HMM hmm_initial;
 	loadHMM( &hmm_initial, argv[2] );
     char seq_model = argv[3];
     char model    = argv[4];
-    HMM hmm_initial;
+    
 
     
     FILE *f_seq = open_or_die(seq_model,"r");
