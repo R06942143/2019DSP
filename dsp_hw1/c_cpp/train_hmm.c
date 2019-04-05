@@ -1,146 +1,136 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "hmm.h"
-#include <math.h>
-#define num_of_state 6
+HMM hmm;
 
-    double alpha[200][num_of_state]={0.0};
-    double beta[200][num_of_state]={0.0};
-    double gama[200][num_of_state]={0.0};
-    double R_gama[15000][200][num_of_state]={0.0},r[15000][num_of_state]={0.0},r1[15000][num_of_state]={0.0};
-    double delta[200][num_of_state][num_of_state]={0.0};
-    double E_delta[15000][num_of_state][num_of_state]={0.0};
+/*
+typedef struct{
+   char *model_name;
+   int state_num;                   //number of state
+   int observ_num;                  //number of observation
+   double initial[MAX_STATE];           //initial prob.
+   double transition[MAX_STATE][MAX_STATE]; //transition prob.
+   double observation[MAX_OBSERV][MAX_STATE];   //observation prob.
+} HMM;
+*/
 
-int main(int argc,char *argv[])
-{
- 	HMM hmm_initial;
+void trainHmm(char* seq_model){
+    FILE *fp = open_or_die(seq_model, "r");
 
-    double sum,sum2;
-	int i,j,k,t,h,l,sample=0,interation;
-    char line_data[256];
-	
-	interation=atoi(argv[1]);
-	loadHMM( &hmm_initial, argv[2] );
-	FILE *fp1=open_or_die(argv[3],"r");
-    FILE *fp2=open_or_die(argv[4],"w+");
+    char seq[MAX_TIME];
+    int state_num = hmm.state_num, obsv_num = hmm.observ_num;
+    double gamma[MAX_TIME][state_num], obsv_gamma[obsv_num][state_num];
+    double epsilon[state_num][state_num];
+
+    memset(gamma, 0, sizeof(gamma));
+    memset(obsv_gamma, 0, sizeof(obsv_gamma));
+    memset(epsilon, 0, sizeof(epsilon));
+
+    int N=0, T;
+    while(fgets(seq, MAX_TIME, fp)>0){
+        T = strlen(seq)-1;
+        N++;
+        for(int t=0;t<T;t++) seq[t] -= 'A';
+            
+        //calculate alpha
+        double alpha[T][state_num];
+        for(int s=0;s<state_num;s++){ //initial alpha
+            alpha[0][s] = hmm.initial[s]*hmm.observation[seq[0]][s];
+            //printf("alpha[%d][%d] = %g\n",  0, s, alpha[0][s]);
+        }
+
+        for(int t=1;t<T;t++){ //forward: for each time slice
+            for(int s=0;s<state_num;s++){ //for each current state
+                alpha[t][s] = 0;
+                for(int ps=0;ps<state_num;ps++){ //for each previous state
+                    alpha[t][s] += alpha[t-1][ps]*hmm.transition[ps][s];
+                }
+                alpha[t][s] *= hmm.observation[seq[t]][s];
+                //printf("alpha[%d][%d] = %g\n", t, s, alpha[t][s]);
+            }
+        }
+
+        //calculate beta
+        double beta[T][state_num];
+        for(int s=0;s<state_num;s++){
+            beta[T-1][s] = 1; //initial beta
+            //printf("beta[%d][%d] = %g\n", T-1, s, beta[T-1][s]);
+        }
+
+        for(int t=T-2;t>=0;t--){//backward: for each time slice
+            for(int s=0;s<state_num;s++){ //for each current state
+                beta[t][s] = 0;
+                for(int ns=0;ns<state_num;ns++) // for each next state
+                    beta[t][s] += hmm.transition[s][ns]*hmm.observation[seq[t+1]][ns]*beta[t+1][ns];
+                //printf("beta[%d][%d] = %g\n", t, s, beta[t][s]);
+            }
+        }
+
+        //calculate gamma and epsilon
+        for(int t=0;t<T;t++){
+            double sumArr[state_num], sum = 0;
+            for(int s=0;s<state_num;s++){
+                sumArr[s] = alpha[t][s]*beta[t][s];
+                sum += sumArr[s];
+            }
+
+            for(int s=0;s<state_num;s++){
+                //calculate gamma
+                gamma[t][s] += sumArr[s]/sum;
+                //printf("gamma[%d][%d][%d] = %g\n", N-1, t, s, sumArr[s]/sum);
+                obsv_gamma[seq[t]][s] += sumArr[s]/sum;
+                   
+                //calculate epsilon
+                if(t==T-1) continue;
+                for(int ns=0;ns<state_num;ns++)
+                    epsilon[s][ns] += (alpha[t][s]*hmm.transition[s][ns]*hmm.observation[seq[t+1]][ns]*beta[t+1][ns])/sum;
+            }
+        }
+    }
+    fclose(fp);
+
+
+    for(int s=0;s<state_num;s++){
+        //update pi
+        hmm.initial[s] = gamma[0][s]/N;
+
+        //update transition(A)
+        double gamma_sum = 0;
+        for(int t=0;t<T-1;t++) gamma_sum += gamma[t][s];
+        for(int ns=0;ns<state_num;ns++)
+            hmm.transition[s][ns] = epsilon[s][ns]/gamma_sum;
+    }
+
+    //update observation(B)
+    for(int obsv=0;obsv<obsv_num;obsv++){
+        for(int s=0;s<state_num;s++){
+            double gamma_sum = 0;
+            for(int t=0;t<T;t++) gamma_sum += gamma[t][s];
+            hmm.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
+        }
+    }
+}
+
+int main(int argc, char** argv){
+    if(argc!=5){
+        printf("Error: Need 4 arguments (#iteration, model_init.txt, seq_model.txt, model.txt).\n");
+        return 0;
+    }
     
-	for(l=0;l<interation;l++)
-	{
-		while(fscanf(fp1,"%s",line_data)>0)
-		{
-			sample=0;
-			//forwarding calculate alpha
-			//initial
-      		for(i=0;i<num_of_state;i++)	
-      		{
-				k=line_data[0]-'A';
-            	alpha[0][i]=hmm_initial.initial[i]*hmm_initial.observation[k][i];
-      		}
-      		//induction
-      		for(t=0;t<strlen(line_data)-1;t++)
-      		{
-				for(j=0;j<num_of_state;j++)
-				{
-					for(sum=0.0,i=0;i<num_of_state;i++)
-						sum+=alpha[t][i]*hmm_initial.transition[i][j];
-			
-					k=line_data[t+1]-'A';
-					alpha[t+1][j]=sum*hmm_initial.observation[k][j];
-				}
-	  		}
-	  
-	  		//backwarding calculate beta
-      		//initial
-	  		for(i=0;i<num_of_state;i++)
-      		{
-				beta[strlen(line_data)-1][i]=1;
-		    }
-      		//induction
-      		for(t=strlen(line_data)-2;t>=0;t--)
-      		{
-				for(i=0;i<num_of_state;i++)
-				{
-					for(beta[t][i]=0.0,j=0;j<num_of_state;j++)
-					{
-						k=line_data[t+1]-'A';
-						beta[t][i]+=hmm_initial.transition[i][j]*hmm_initial.observation[k][j]*beta[t+1][j];
-					}
-				}
-	  		}
-	  
-      		//calculate gama
-			for(t=0;t<strlen(line_data);t++)
-	  		{
-				for(sum=0.0,j=0;j<num_of_state;j++)
-		  			sum+=alpha[t][j]*beta[t][j];
-				for(i=0;i<num_of_state;i++)
-				{
-	  				gama[t][i]+=((alpha[t][i]*beta[t][i])/sum);
-					R_gama[sample][i][line_data[t]-'A']+=gama[t][i]; // 10000 samples
-				}
-			}	
-	  		//calculate delta
-			for(t=0;t<strlen(line_data)-1;t++)
-			{
-				for(sum=0.0,i=0;i<num_of_state;i++)
-					for(j=0;j<num_of_state;j++)
-					{
-						k=line_data[t+1]-'A';
-						sum+=alpha[t][i]*hmm_initial.transition[i][j]*hmm_initial.observation[k][j]*beta[t+1][j];
-					}
-	  			for(i=0;i<num_of_state;i++)
-					for(j=0;j<num_of_state;j++)
-					{
-						k=line_data[t+1]-'A';
-						delta[t][i][j]=((alpha[t][i]*hmm_initial.transition[i][j]*hmm_initial.observation[k][j]*beta[t+1][j])/sum);
-					}
-			}
-	  
-			for(i=0;i<num_of_state;i++)
-				for(j=0;j<num_of_state;j++)
-					for(t=0;t<strlen(line_data)-1;t++)
-						E_delta[sample][i][j]+=delta[t][i][j];
-			
-			for(i=0;i<num_of_state;i++)
-				for(t=0;t<strlen(line_data)-1;t++)
-					r[sample][i]+=gama[t][i];
-			
-			for(i=0;i<num_of_state; i++)
-				for(t=0;t<strlen(line_data);t++)
-					r1[sample][i]+=gama[t][i];
-				
-	  	sample++;
-		}
-	    //update
-	    for(i=0;i<num_of_state;i++)
-	    	hmm_initial.initial[i]=gama[0][i]/sample;  //initial
-	    
-		for(i=0;i<num_of_state;i++)
-		{
-			for(j=0;j<num_of_state;j++)
-			{
-				sum=sum2=0.0;
-				for(t=0;t<sample;t++)
-				{
-					sum +=E_delta[t][i][j];
-					sum2+=r[t][i];
-				}
-				hmm_initial.transition[i][j]=sum/sum2; //transition
-			}
-		}
-	    
-		for(j=0;j<num_of_state;j++)
-			for(i=0;i<hmm_initial.observ_num;i++)
-			{
-				sum=sum2=0.0;
-				for(t=0;t<sample;t++)
-				{
-					sum+=R_gama[t][j][i];
-					sum2+=r1[t][j];
-				}
-				hmm_initial.observation[i][j]=sum/sum2;
-			}
-	}
-	dumpHMM( fp2, &hmm_initial );
-	return 0;
+    //set up arguments
+    int itr = atoi(argv[1]);
+    char* init_txt = argv[2];
+    char* seq_model = argv[3];
+    char* out_txt = argv[4];
+
+    loadHMM(&hmm, init_txt);
+
+    for(int i=0;i<itr;i++) trainHmm(seq_model);
+
+    FILE *fp_out = open_or_die(out_txt, "w");
+    dumpHMM(fp_out, &hmm);
+    fclose(fp_out);
+
+    return 0;
 }
