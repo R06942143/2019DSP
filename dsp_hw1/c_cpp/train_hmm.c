@@ -18,7 +18,7 @@ void trainHmm(char* seq_model){
 
     int N=0, T;
     while(fgets(seq, MAX_TIME, fp)>0){
-        printf(seq)
+        printf(seq);
         T = strlen(seq)-1;
         N++;
         for(int t=0;t<T;t++) seq[t] -= 'A';
