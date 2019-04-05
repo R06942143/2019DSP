@@ -144,21 +144,3 @@ int main(int argc,char *argv[])
 	dumpHMM( fp2, &hmm_initial );
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
