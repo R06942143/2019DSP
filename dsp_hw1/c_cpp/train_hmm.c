@@ -18,10 +18,14 @@ void trainHmm(char* seq_model){
 
     int N=0, T;
     while(fgets(seq, MAX_TIME, fp)>0){
-        printf(seq);
         T = strlen(seq)-1;
         N++;
-        for(int t=0;t<T;t++) seq[t] -= 'A';
+        for(int t=0;t<T;t++){
+            printf(seq[t]);
+            seq[t] -= 'A';
+            printf('\n');
+        }
+            
             
         //calculate alpha
         double alpha[T][state_num];
@@ -104,6 +108,7 @@ void trainHmm(char* seq_model){
 
 int main(int argc, char** argv){
 
+    //set up arguments
     int itration = atoi(argv[1]);
     char* init_txt = argv[2];
     char* seq_model = argv[3];
