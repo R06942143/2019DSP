@@ -5,9 +5,9 @@
 HMM hmm;
 
 void trainHmm(char* seq_model){
-    FILE *fp = open_or_die(seq_model, "r");
+    FILE *f_seq = open_or_die(seq_model, "r");
 
-    char seq[50];
+    //char seq[50];
     int state_num = hmm.state_num, obsv_num = hmm.observ_num;
     double gamma[50][state_num], obsv_gamma[obsv_num][state_num];
     double epsilon[state_num][state_num];
@@ -17,18 +17,14 @@ void trainHmm(char* seq_model){
     memset(epsilon, 0, sizeof(epsilon));
 
     int N=0, T;
-    while(fgets(seq, 50, fp)>0){
+    while(fscanf(f_seq,"%s",seq)>0){
         T = strlen(seq)-1;
         N++;
-        for(int t=0;t<T;t++){
-            seq[t] -= 'A';
-        }
-            
-            
+
         //calculate alpha
         double alpha[T][state_num];
         for(int s=0;s<state_num;s++){ //initial alpha
-            alpha[0][s] = hmm.initial[s]*hmm.observation[seq[0]][s];
+            alpha[0][s] = hmm.initial[s]*hmm.observation[seq[0]-'A'][s];
             //printf("alpha[%d][%d] = %g\n",  0, s, alpha[0][s]);
         }
 
@@ -38,7 +34,7 @@ void trainHmm(char* seq_model){
                 for(int ps=0;ps<state_num;ps++){ //for each previous state
                     alpha[t][s] += alpha[t-1][ps]*hmm.transition[ps][s];
                 }
-                alpha[t][s] *= hmm.observation[seq[t]][s];
+                alpha[t][s] *= hmm.observation[seq[t]-'A'][s];
                 //printf("alpha[%d][%d] = %g\n", t, s, alpha[t][s]);
             }
         }
@@ -54,7 +50,7 @@ void trainHmm(char* seq_model){
             for(int s=0;s<state_num;s++){ //for each current state
                 beta[t][s] = 0;
                 for(int ns=0;ns<state_num;ns++) // for each next state
-                    beta[t][s] += hmm.transition[s][ns]*hmm.observation[seq[t+1]][ns]*beta[t+1][ns];
+                    beta[t][s] += hmm.transition[s][ns]*hmm.observation[seq[t+1]-'A'][ns]*beta[t+1][ns];
                 //printf("beta[%d][%d] = %g\n", t, s, beta[t][s]);
             }
         }
@@ -71,12 +67,12 @@ void trainHmm(char* seq_model){
                 //calculate gamma
                 gamma[t][s] += sumArr[s]/sum;
                 //printf("gamma[%d][%d][%d] = %g\n", N-1, t, s, sumArr[s]/sum);
-                obsv_gamma[seq[t]][s] += sumArr[s]/sum;
+                obsv_gamma[seq[t]-'A'][s] += sumArr[s]/sum;
                    
                 //calculate epsilon
                 if(t==T-1) continue;
                 for(int ns=0;ns<state_num;ns++)
-                    epsilon[s][ns] += (alpha[t][s]*hmm.transition[s][ns]*hmm.observation[seq[t+1]][ns]*beta[t+1][ns])/sum;
+                    epsilon[s][ns] += (alpha[t][s]*hmm.transition[s][ns]*hmm.observation[seq[t+1]-'A'][ns]*beta[t+1][ns])/sum;
             }
         }
     }
