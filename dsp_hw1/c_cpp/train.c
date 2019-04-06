@@ -9,10 +9,10 @@ int main(int argc, char* argv[]){
 
     //========argv============
     int iteration = atoi(argv[1]);
-    printf("%d",iteration);
+    
     loadHMM(&hmm_initial, argv[2]);
     FILE *f_seq = open_or_die(argv[3], "r");
-    FILE *fp_out = open_or_die(argv[4], "w");
+    FILE *fp_out = open_or_die(argv[4], "w+");
 
 
     //========variable========
@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
+            printf("%d",T);
             N++;
 
             //calculate alpha
