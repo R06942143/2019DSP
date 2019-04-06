@@ -9,10 +9,9 @@ int main(int argc, char* argv[]){
 
     //========argv============
     int iteration = atoi(argv[1]);
-    
     loadHMM(&hmm_initial, argv[2]);
     FILE *f_seq = open_or_die(argv[3], "r");
-    FILE *fp_out = open_or_die(argv[4], "w+");
+    FILE *fp_out = open_or_die(argv[4], "w");
 
 
 
@@ -33,14 +32,13 @@ int main(int argc, char* argv[]){
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
             N++;
-            
 
             //calculate alpha
             //initial alpha
             double alpha[T][state_num];
             for(int s=0;s<state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
-                printf("%f",hmm_initial.initial[s]);
+                //printf("%f",hmm_initial.initial[s]);
             }
 
             //forward
@@ -88,6 +86,7 @@ int main(int argc, char* argv[]){
                 }
             }
         }
+        
 
 
         for(int s=0;s<state_num;s++){
