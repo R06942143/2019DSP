@@ -35,7 +35,7 @@ void main(int argc,char *argv[])
 				{
 					p[t][j] = 0.0;
 					//find max seqence
-					for(i=0;i<N;i++)
+					for(int i=0;i<N;i++)
 						p[t][j]=max(p[t][j],p[t-1][i]*hmmdata[n].transition[i][j]);
 					p[t][j] *= hmmdata[n].observation[seq[t]-'A'][j];
 				}
