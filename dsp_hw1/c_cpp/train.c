@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
             double alpha[T][state_num];
             for(int s=0;s<state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
-                //printf("%f",hmm_initial.initial[s]);
+                printf("%f,",hmm_initial.initial[s]);
             }
 
             //forward
@@ -112,7 +112,6 @@ int main(int argc, char* argv[]){
             }
         }
     }
-    printf("%f",hmm_initial.initial[1]);
 
     dumpHMM(fp_out, &hmm_initial);
     fclose(fp_out);
