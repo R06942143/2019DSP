@@ -8,7 +8,8 @@ int main(int argc, char* argv[]){
     HMM hmm_initial;
 
     //========argv============
-    int itration = atoi(argv[1]);
+    int iteration = atoi(argv[1]);
+    printf("%d",iteration)
     loadHMM(&hmm_initial, argv[2]);
     FILE *f_seq = open_or_die(argv[3], "r");
     FILE *fp_out = open_or_die(argv[4], "w");
@@ -26,7 +27,7 @@ int main(int argc, char* argv[]){
 
 
 
-    for(int i=0;i<itration;i++){
+    for(int i=0;i<iteration;i++){
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
@@ -75,7 +76,6 @@ int main(int argc, char* argv[]){
                 for(int s=0;s<state_num;s++){
                     //calculate gamma
                     gamma[t][s] += sumArr[s]/sum;
-                    //printf("gamma[%d][%d][%d] = %g\n", N-1, t, s, sumArr[s]/sum);
                     obsv_gamma[seq[t]-'A'][s] += sumArr[s]/sum;
                    
                     //calculate epsilon
