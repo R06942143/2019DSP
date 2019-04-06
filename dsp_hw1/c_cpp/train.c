@@ -18,7 +18,6 @@ int main(int argc, char* argv[]){
     //========variable========
     char seq[256];
     int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
-    printf("%d",state_num);
     double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
     double epsilon[state_num][state_num];
 
@@ -40,6 +39,7 @@ int main(int argc, char* argv[]){
             double alpha[T][state_num];
             for(int s=0;s<state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
+                printf("%d",alpha[0][s]);
             }
 
             //forward
@@ -105,8 +105,9 @@ int main(int argc, char* argv[]){
         for(int obsv=0;obsv<obsv_num;obsv++){
             for(int s=0;s<state_num;s++){
                 double gamma_sum = 0;
-                for(int t=0;t<T;t++) gamma_sum += gamma[t][s];
-                    hmm_initial.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
+                for(int t=0;t<T;t++) 
+                    gamma_sum += gamma[t][s];
+                hmm_initial.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
             }
         }
     }
