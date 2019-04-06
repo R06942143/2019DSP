@@ -15,19 +15,20 @@ int main(int argc, char* argv[]){
     FILE *fp_out = open_or_die(argv[4], "w+");
 
 
-    //========variable========
-    char seq[256];
-    int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
-    double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
-    double epsilon[state_num][state_num];
-
-    memset(gamma, 0, sizeof(gamma));
-    memset(obsv_gamma, 0, sizeof(obsv_gamma));
-    memset(epsilon, 0, sizeof(epsilon));
-
 
 
     for(int i=0;i<iteration;i++){
+        
+        //========variable========
+        char seq[256];
+        int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
+        double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
+        double epsilon[state_num][state_num];
+
+        memset(gamma, 0, sizeof(gamma));
+        memset(obsv_gamma, 0, sizeof(obsv_gamma));
+        memset(epsilon, 0, sizeof(epsilon));
+
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
