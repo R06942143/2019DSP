@@ -21,13 +21,13 @@ double HMMProb(int hid, char*seq){
         delta[0][s] = hmm.initial[s]*hmm.observation[seq[0]-'A'][s];
 
     for(int t=1;t<T;t++){ //forward: for each time slice
-        int obsv = seq[t]-'A'; //observation at time t
+        //observation at time t
         for(int s=0;s<state_num;s++){ //for each current state
             delta[t][s] = 0;
             for(int ps=0;ps<state_num;ps++) //for each previous state
                 delta[t][s] = max(delta[t][s], delta[t-1][ps]*hmm.transition[ps][s]);
             
-            delta[t][s] *= hmm.observation[obsv][s];
+            delta[t][s] *= hmm.observation[seq[t]-'A'][s];
         }
     }
 
