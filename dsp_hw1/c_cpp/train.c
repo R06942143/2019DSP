@@ -81,8 +81,8 @@ void main(int argc, char* argv[]){
                    
                     //calculate epsilon
                     if(t==T-1) continue;
-                    for(int ns=0;ns<state_num;ns++)
-                        E[s][ns] += (alpha[t][s]*hmm_initial.transition[s][ns]*hmm_initial.observation[seq[t+1]-'A'][ns]*beta[t+1][ns])/sum;
+                    for(int s_another=0;s_another<state_num;s_another++)
+                        E[s][s_another] += (alpha[t][s]*hmm_initial.transition[s][s_another]*hmm_initial.observation[seq[t+1]-'A'][s_another]*beta[t+1][s_another])/sum;
                 }
             }
         }
@@ -96,8 +96,8 @@ void main(int argc, char* argv[]){
             double gamma_sum = 0;
             for(int t=0;t<T-1;t++) 
                 gamma_sum += seq_gamma[t][s];
-            for(int ns=0;ns<state_num;ns++)
-                hmm_initial.transition[s][ns] = E[s][ns]/gamma_sum;
+            for(int s_another = 0;s_another < state_num;s_another++)
+                hmm_initial.transition[s][s_another] = E[s][s_another]/gamma_sum;
         }
 
 
