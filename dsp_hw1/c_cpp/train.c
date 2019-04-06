@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
             double alpha[T][state_num];
             for(int s=0;s<state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
-                printf("%f",hmm_initial.initial[s]);
+                //printf("%f",hmm_initial.initial[s]);
             }
 
             //forward
@@ -86,9 +86,7 @@ int main(int argc, char* argv[]){
                 }
             }
         }
-        
-
-
+        printf("%d",N);
         for(int s=0;s<state_num;s++){
             //update pi
             hmm_initial.initial[s] = gamma[0][s]/N;
