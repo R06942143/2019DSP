@@ -40,7 +40,6 @@ void main(int argc,char *argv[])
 					p[t][j] *= hmmdata[n].observation[seq[t]-'A'][j];
 				}
 			}
-			
 			for(int i=0;i<N;i++){
 				if(p[T-1][i]>max_){
 					max_ = p[T-1][i];
