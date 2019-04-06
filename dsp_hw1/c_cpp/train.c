@@ -9,7 +9,7 @@ int main(int argc, char* argv[]){
 
     //========argv============
     int iteration = atoi(argv[1]);
-    printf("%d",iteration)
+    printf("%d",iteration);
     loadHMM(&hmm_initial, argv[2]);
     FILE *f_seq = open_or_die(argv[3], "r");
     FILE *fp_out = open_or_die(argv[4], "w");
