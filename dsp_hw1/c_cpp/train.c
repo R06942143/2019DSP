@@ -86,7 +86,8 @@ int main(int argc, char* argv[]){
                 }
             }
         }
-        clearerr(f_seq);
+        //clearerr(f_seq);
+        fseek(f_seq, 0, SEEK_SET);
         printf("%d",N);
         for(int s=0;s<state_num;s++){
             //update pi
