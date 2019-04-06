@@ -4,7 +4,7 @@
 #include "hmm.h"
 
 
-int main(int argc, char* argv[]){
+void main(int argc, char* argv[]){
     HMM hmm_initial;
 
     //========argv============
@@ -13,57 +13,57 @@ int main(int argc, char* argv[]){
     FILE *f_seq = open_or_die(argv[3], "r");
     FILE *fp_out = open_or_die(argv[4], "w");
 
-
-
-
-    for(int i=0;i<iteration;i++){
+    for(int iter = 0;iter < iteration;iter++){
         
         //========variable========
         char seq[256];
         int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
-        double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
-        double epsilon[state_num][state_num];
+        printf("%d",obsv_num);
+        double seq_gamma[256][state_num], obsv_gamma[obsv_num][state_num];
+        double E[state_num][state_num];
 
-        memset(gamma, 0, sizeof(gamma));
+        memset(seq_gamma, 0, sizeof(seq_gamma));
         memset(obsv_gamma, 0, sizeof(obsv_gamma));
-        memset(epsilon, 0, sizeof(epsilon));
+        memset(E, 0, sizeof(E));
 
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
             N++;
-            
-            //calculate alpha
-            //initial alpha
             double alpha[T][state_num];
-            for(int s=0;s<state_num;s++){
+            double beta[T][state_num];
+            
+            //========================calculate alpha
+            //initial alpha
+            //pi*b(o)
+            for(int s = 0;s < state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
                 //printf("%f",hmm_initial.initial[s]);
             }
 
             //forward
-            for(int t=1;t<T;t++){
-                for(int s=0;s<state_num;s++){
+            //
+            for(int t = 1;t < T;t++){
+                for(int s = 0;s < state_num;s++){
                     alpha[t][s] = 0;
-                    for(int ps=0;ps<state_num;ps++){
-                        alpha[t][s] += alpha[t-1][ps]*hmm_initial.transition[ps][s];
+                    for(int s_another = 0;s_another < state_num;s_another++){
+                        alpha[t][s] += alpha[t-1][s_another]*hmm_initial.transition[s_another][s];
                     }
                     alpha[t][s] *= hmm_initial.observation[seq[t]-'A'][s];
                 }
             }
 
-            //calculate beta
+            //========================calculate beta
             //initial bata
-            double beta[T][state_num];
-            for(int s=0;s<state_num;s++){
+            for(int s = 0;s < state_num;s++){
                 beta[T-1][s] = 1;
             }
             //backward algorithm
-            for(int t=T-2;t>=0;t--){
-                for(int s=0;s<state_num;s++){
-                    beta[t][s] = 0;
-                    for(int ns=0;ns<state_num;ns++)
-                        beta[t][s] += hmm_initial.transition[s][ns]*hmm_initial.observation[seq[t+1]-'A'][ns]*beta[t+1][ns];
+            for(int t = T-1;t > 0;t--){
+                for(int s = 0;s < state_num;s++){
+                    beta[t-1][s] = 0;
+                    for(int s_another = 0;s_another < state_num;s_another++)
+                        beta[t-1][s] += hmm_initial.transition[s][s_another]*hmm_initial.observation[seq[t]-'A'][s_another]*beta[t][s_another];
                 }
             }
             //calculate gamma and epsilon
@@ -76,13 +76,13 @@ int main(int argc, char* argv[]){
 
                 for(int s=0;s<state_num;s++){
                     //calculate gamma
-                    gamma[t][s] += sumArr[s]/sum;
+                    seq_gamma[t][s] += sumArr[s]/sum;
                     obsv_gamma[seq[t]-'A'][s] += sumArr[s]/sum;
                    
                     //calculate epsilon
                     if(t==T-1) continue;
                     for(int ns=0;ns<state_num;ns++)
-                        epsilon[s][ns] += (alpha[t][s]*hmm_initial.transition[s][ns]*hmm_initial.observation[seq[t+1]-'A'][ns]*beta[t+1][ns])/sum;
+                        E[s][ns] += (alpha[t][s]*hmm_initial.transition[s][ns]*hmm_initial.observation[seq[t+1]-'A'][ns]*beta[t+1][ns])/sum;
                 }
             }
         }
@@ -90,31 +90,26 @@ int main(int argc, char* argv[]){
         fseek(f_seq, 0, SEEK_SET);
         
         for(int s=0;s<state_num;s++){
-            //update pi
-            hmm_initial.initial[s] = gamma[0][s]/N;
 
-            //update transition(A)
+            hmm_initial.initial[s] = seq_gamma[0][s]/N;
+
             double gamma_sum = 0;
             for(int t=0;t<T-1;t++) 
-                gamma_sum += gamma[t][s];
+                gamma_sum += seq_gamma[t][s];
             for(int ns=0;ns<state_num;ns++)
-                hmm_initial.transition[s][ns] = epsilon[s][ns]/gamma_sum;
+                hmm_initial.transition[s][ns] = E[s][ns]/gamma_sum;
         }
 
-        //update observation(B)
+
         for(int obsv=0;obsv<obsv_num;obsv++){
             for(int s=0;s<state_num;s++){
                 double gamma_sum = 0;
                 for(int t=0;t<T;t++) 
-                    gamma_sum += gamma[t][s];
+                    gamma_sum += seq_gamma[t][s];
                 hmm_initial.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
                 
             }
         }
     }
-
     dumpHMM(fp_out, &hmm_initial);
-    fclose(fp_out);
-
-    return 0;
 }
