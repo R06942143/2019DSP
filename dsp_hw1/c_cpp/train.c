@@ -28,9 +28,9 @@ int main(int argc, char* argv[]){
 
 
     for(int i=0;i<iteration;i++){
+        printf("%d",i);
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
-            printf("%s",seq);
             T = strlen(seq)-1;
             N++;
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
             double alpha[T][state_num];
             for(int s=0;s<state_num;s++){
                 alpha[0][s] = hmm_initial.initial[s]*hmm_initial.observation[seq[0]-'A'][s];
-                printf("%f",alpha[0][s]);
+                
             }
 
             //forward
