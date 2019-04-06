@@ -86,6 +86,7 @@ int main(int argc, char* argv[]){
                 }
             }
         }
+        clearerr(f_seq);
         printf("%d",N);
         for(int s=0;s<state_num;s++){
             //update pi
