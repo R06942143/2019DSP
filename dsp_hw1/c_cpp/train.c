@@ -18,6 +18,7 @@ int main(int argc, char* argv[]){
     //========variable========
     char seq[256];
     int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
+    printf("%d",state_num);
     double gamma[256][state_num], obsv_gamma[obsv_num][state_num];
     double epsilon[state_num][state_num];
 
@@ -31,7 +32,6 @@ int main(int argc, char* argv[]){
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
-            printf("%d",T);
             N++;
 
             //calculate alpha
