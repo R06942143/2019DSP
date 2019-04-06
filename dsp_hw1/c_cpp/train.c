@@ -4,7 +4,7 @@
 #include "hmm.h"
 
 
-void main(int argc, char* argv[]){
+int main(int argc, char* argv[]){
     HMM hmm_initial;
 
     //========argv============
@@ -112,4 +112,6 @@ void main(int argc, char* argv[]){
 
     dumpHMM(fp_out, &hmm_initial);
     fclose(fp_out);
+
+    return 0;
 }
