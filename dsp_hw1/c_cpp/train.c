@@ -28,11 +28,11 @@ int main(int argc, char* argv[]){
 
 
     for(int i=0;i<iteration;i++){
-        printf("%d",i);
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
             N++;
+            printf("%d",N);
 
             //calculate alpha
             //initial alpha
