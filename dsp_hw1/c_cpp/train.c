@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
             N++;
-
+            printf("%s",seq);
             //calculate alpha
             //initial alpha
             double alpha[T][state_num];
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]){
         for(int s=0;s<state_num;s++){
             //update pi
             hmm_initial.initial[s] = gamma[0][s]/N;
-            printf("%d",N);
+
             //update transition(A)
             double gamma_sum = 0;
             for(int t=0;t<T-1;t++) 
