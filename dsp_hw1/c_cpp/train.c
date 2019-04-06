@@ -18,7 +18,7 @@ void main(int argc, char* argv[]){
         //========variable========
         char seq[256];
         int state_num = hmm_initial.state_num, obsv_num = hmm_initial.observ_num;
-        printf("%d",obsv_num);
+        //printf("%d",obsv_num);
         double seq_gamma[256][state_num], obsv_gamma[obsv_num][state_num];
         double E[state_num][state_num];
 
