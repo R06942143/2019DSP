@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
         while(fscanf(f_seq,"%s",seq)>0){
             T = strlen(seq)-1;
             N++;
-            printf("%d",N);
+            
 
             //calculate alpha
             //initial alpha
@@ -108,6 +108,7 @@ int main(int argc, char* argv[]){
                 for(int t=0;t<T;t++) 
                     gamma_sum += gamma[t][s];
                 hmm_initial.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
+                printf("%f",gamma_sum);
             }
         }
     }
