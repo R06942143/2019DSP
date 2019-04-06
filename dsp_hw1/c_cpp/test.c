@@ -5,18 +5,17 @@
 #include <math.h>
 
 double p[MAX_SEQ][MAX_STATE];
-double Pro[5];
 
 void main(int argc,char *argv[])
 {
     HMM hmmdata[5];
 	load_models( argv[1], hmmdata, 5);
-	FILE *input=open_or_die(argv[2],"r");  
+	FILE *test_data=open_or_die(argv[2],"r");  
 	FILE *result=open_or_die(argv[3],"w+");
 	
 	char seq[256];
 
-	while(fscanf(input,"%s",seq)>0)
+	while(fscanf(test_data,"%s",seq)>0)
 	{
 		int T = strlen(seq);
 		double max_ = 0.0;
