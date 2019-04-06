@@ -8,8 +8,8 @@ double p[MAX_SEQ][MAX_STATE];
 
 void main(int argc,char *argv[])
 {
-    HMM hmmdata[5];
-	load_models( argv[1], hmmdata, 5);
+    HMM model[5];
+	load_models( argv[1], model, 5);
 	FILE *test_data=open_or_die(argv[2],"r");  
 	FILE *result=open_or_die(argv[3],"w+");
 	
@@ -22,10 +22,10 @@ void main(int argc,char *argv[])
 		int num_max = 0;
 		for(int n=0;n<5;n++)
 		{
-			int N=hmmdata[n].state_num;
+			int N=model[n].state_num;
 			//initial
 			for(int i=0;i<N;i++)	
-				p[0][i]=hmmdata[n].initial[i]*hmmdata[n].observation[seq[0]-'A'][i];
+				p[0][i]=model[n].initial[i]*model[n].observation[seq[0]-'A'][i];
 
 			//recursion
 			for(int t=1;t<T;t++)
@@ -35,8 +35,8 @@ void main(int argc,char *argv[])
 					p[t][j] = 0.0;
 					//find max seqence
 					for(int i=0;i<N;i++)
-						p[t][j]=max(p[t][j],p[t-1][i]*hmmdata[n].transition[i][j]);
-					p[t][j] *= hmmdata[n].observation[seq[t]-'A'][j];
+						p[t][j]=max(p[t][j],p[t-1][i]*model[n].transition[i][j]);
+					p[t][j] *= model[n].observation[seq[t]-'A'][j];
 				}
 			}
 			for(int i=0;i<N;i++){
@@ -46,6 +46,6 @@ void main(int argc,char *argv[])
 				}
 			}
 		}
-		fprintf(result,"%s %e\n",hmmdata[num_max].model_name,max_);
+		fprintf(result,"%s %e\n",model[num_max].model_name,max_);
 	}
 }
