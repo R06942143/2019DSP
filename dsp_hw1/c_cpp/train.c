@@ -108,11 +108,11 @@ int main(int argc, char* argv[]){
                 for(int t=0;t<T;t++) 
                     gamma_sum += gamma[t][s];
                 hmm_initial.observation[obsv][s] = obsv_gamma[obsv][s]/gamma_sum;
-                printf("%f",gamma_sum);
+                //printf("%f",gamma_sum);
             }
         }
     }
-
+    printf("%f",hmm_initial.initial[1]);
 
     dumpHMM(fp_out, &hmm_initial);
     fclose(fp_out);
