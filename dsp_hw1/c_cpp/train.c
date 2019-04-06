@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
     for(int i=0;i<iteration;i++){
         int N=0, T;
         while(fscanf(f_seq,"%s",seq)>0){
+            printf("%d",seq);
             T = strlen(seq)-1;
             N++;
 
