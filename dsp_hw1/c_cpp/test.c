@@ -41,7 +41,7 @@ void main(int argc,char *argv[])
 				}
 			}
 			
-			for(i=0;i<N;i++){
+			for(int i=0;i<N;i++){
 				if(p[T-1][i]>max_){
 					max_ = p[T-1][i];
 					num_max=n;
